@@ -10,12 +10,14 @@ import {
 import { getTasks } from "../api/taskApi";
 import { Task } from "../types/task";
 import SearchBar from "../components/SearchBar";
+import StatusFilter from "../components/StatusFilter";
 
 export default function TaskScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [keyword, setKeyword] = useState("");
+  const [status, setStatus] = useState("");
 
   const fetchTasks = async () => {
     try {
@@ -23,6 +25,7 @@ export default function TaskScreen() {
 
       const response = await getTasks({
         keyword,
+        status,
       });
 
       setTasks(response.data.data);
@@ -35,7 +38,7 @@ export default function TaskScreen() {
 
   useEffect(() => {
     fetchTasks();
-  }, [keyword]);
+  }, [keyword, status]);
 
   if (loading) {
     return (
@@ -49,6 +52,8 @@ export default function TaskScreen() {
     <>
       <SearchBar value={keyword} onChangeText={setKeyword} />
 
+      <StatusFilter value={status} onChange={setStatus} />
+
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
@@ -58,9 +63,9 @@ export default function TaskScreen() {
 
             <Text>{item.description}</Text>
 
-            <Text>Status : {item.status}</Text>
+            <Text>Status: {item.status}</Text>
 
-            <Text>Assignee : {item.assignee}</Text>
+            <Text>Assignee: {item.assignee}</Text>
           </View>
         )}
       />
@@ -77,7 +82,8 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: "#fff",
-    margin: 10,
+    marginHorizontal: 10,
+    marginVertical: 6,
     padding: 15,
     borderRadius: 8,
     elevation: 2,
