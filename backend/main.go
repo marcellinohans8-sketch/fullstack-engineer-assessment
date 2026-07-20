@@ -5,12 +5,19 @@ import (
 	"os"
 
 	"backend/config"
+	"backend/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	config.ConnectDatabase()
+
+	// Auto migrate
+	err := config.DB.AutoMigrate(&models.Task{})
+	if err != nil {
+		panic(err)
+	}
 
 	router := gin.Default()
 
