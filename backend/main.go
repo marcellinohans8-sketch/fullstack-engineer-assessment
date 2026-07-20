@@ -6,6 +6,7 @@ import (
 
 	"backend/config"
 	"backend/models"
+	"backend/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,13 +14,14 @@ import (
 func main() {
 	config.ConnectDatabase()
 
-	// Auto migrate
 	err := config.DB.AutoMigrate(&models.Task{})
 	if err != nil {
 		panic(err)
 	}
 
 	router := gin.Default()
+
+	routes.SetupRoutes(router)
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
