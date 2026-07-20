@@ -101,3 +101,73 @@ func GetTasks(c *gin.Context) {
 		},
 	})
 }
+
+func UpdateTask(c *gin.Context) {
+	id := c.Param("id")
+
+	var task models.Task
+
+	if err := config.DB.First(&task, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"message": "Task not found",
+		})
+		return
+	}
+
+	var input models.Task
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	task.Title = input.Title
+	task.Description = input.Description
+	task.Status = input.Status
+	task.Assignee = input.Assignee
+
+	if err := config.DB.Save(&task).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Task updated successfully",
+		"data":    task,
+	})
+}
+
+func DeleteTask(c *gin.Context) {
+	id := c.Param("id")
+
+	var task models.Task
+
+	if err := config.DB.First(&task, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"message": "Task not found",
+		})
+		return
+	}
+
+	if err := config.DB.Delete(&task).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Task deleted successfully",
+	})
+}
