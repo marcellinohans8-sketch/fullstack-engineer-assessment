@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"backend/config"
 	"backend/models"
@@ -32,5 +33,71 @@ func CreateTask(c *gin.Context) {
 		"success": true,
 		"message": "Task created successfully",
 		"data":    task,
+	})
+}
+
+func GetTasks(c *gin.Context) {
+	var tasks []models.Task
+
+	status := c.Query("status")
+	keyword := c.Query("keyword")
+	assignee := c.Query("assignee")
+
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	sort := c.DefaultQuery("sort", "created_at desc")
+
+	pageInt, _ := strconv.Atoi(page)
+	limitInt, _ := strconv.Atoi(limit)
+
+	if pageInt < 1 {
+		pageInt = 1
+	}
+
+	if limitInt < 1 {
+		limitInt = 10
+	}
+
+	offset := (pageInt - 1) * limitInt
+
+	query := config.DB.Model(&models.Task{})
+
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+
+	if keyword != "" {
+		query = query.Where("title LIKE ? OR description LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
+	}
+
+	if assignee != "" {
+		query = query.Where("assignee = ?", assignee)
+	}
+
+	var total int64
+	query.Count(&total)
+
+	err := query.
+		Order(sort).
+		Limit(limitInt).
+		Offset(offset).
+		Find(&tasks).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": tasks,
+		"pagination": gin.H{
+			"page":  pageInt,
+			"limit": limitInt,
+			"total": total,
+		},
 	})
 }
