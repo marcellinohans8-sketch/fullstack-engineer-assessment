@@ -11,6 +11,7 @@ import { getTasks } from "../api/taskApi";
 import { Task } from "../types/task";
 import SearchBar from "../components/SearchBar";
 import StatusFilter from "../components/StatusFilter";
+import Pagination from "../components/Pagination";
 
 export default function TaskScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -19,6 +20,10 @@ export default function TaskScreen() {
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [total, setTotal] = useState(0);
+
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -26,9 +31,12 @@ export default function TaskScreen() {
       const response = await getTasks({
         keyword,
         status,
+        page,
+        limit,
       });
 
       setTasks(response.data.data);
+      setTotal(response.data.pagination.total);
     } catch (error) {
       console.log(error);
     } finally {
@@ -38,6 +46,10 @@ export default function TaskScreen() {
 
   useEffect(() => {
     fetchTasks();
+  }, [keyword, status, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [keyword, status]);
 
   if (loading) {
@@ -53,6 +65,20 @@ export default function TaskScreen() {
       <SearchBar value={keyword} onChangeText={setKeyword} />
 
       <StatusFilter value={status} onChange={setStatus} />
+
+      <Pagination
+        page={page}
+        total={total}
+        limit={limit}
+        onPrevious={() => setPage((prev) => Math.max(prev - 1, 1))}
+        onNext={() => {
+          const totalPages = Math.ceil(total / limit);
+
+          if (page < totalPages) {
+            setPage((prev) => prev + 1);
+          }
+        }}
+      />
 
       <FlatList
         data={tasks}
