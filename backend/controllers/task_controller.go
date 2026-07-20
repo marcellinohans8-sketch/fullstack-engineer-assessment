@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,7 +23,6 @@ func CreateTask(c *gin.Context) {
 	}
 
 	if err := config.DB.Create(&task).Error; err != nil {
-
 		var mysqlErr *mysqlDriver.MySQLError
 
 		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
@@ -33,6 +33,8 @@ func CreateTask(c *gin.Context) {
 		helpers.Error(c, http.StatusInternalServerError, "Failed to create task", err.Error())
 		return
 	}
+
+	_ = helpers.DeleteCache("tasks:*")
 
 	helpers.Success(c, http.StatusCreated, "Task created successfully", task)
 }
@@ -47,6 +49,23 @@ func GetTasks(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 	limit := c.DefaultQuery("limit", "10")
 	sort := c.DefaultQuery("sort", "created_at desc")
+
+	cacheKey := fmt.Sprintf(
+		"tasks:%s:%s:%s:%s:%s:%s",
+		status,
+		keyword,
+		assignee,
+		page,
+		limit,
+		sort,
+	)
+
+	var cached map[string]interface{}
+
+	if err := helpers.GetCache(cacheKey, &cached); err == nil {
+		c.JSON(http.StatusOK, cached)
+		return
+	}
 
 	pageInt, _ := strconv.Atoi(page)
 	limitInt, _ := strconv.Atoi(limit)
@@ -68,7 +87,11 @@ func GetTasks(c *gin.Context) {
 	}
 
 	if keyword != "" {
-		query = query.Where("title LIKE ? OR description LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
+		query = query.Where(
+			"title LIKE ? OR description LIKE ?",
+			"%"+keyword+"%",
+			"%"+keyword+"%",
+		)
 	}
 
 	if assignee != "" {
@@ -77,6 +100,8 @@ func GetTasks(c *gin.Context) {
 
 	var total int64
 	query.Count(&total)
+
+	fmt.Println("📦 Fetching from MySQL")
 
 	if err := query.
 		Order(sort).
@@ -88,7 +113,7 @@ func GetTasks(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	response := gin.H{
 		"success": true,
 		"data": tasks,
 		"pagination": gin.H{
@@ -96,7 +121,11 @@ func GetTasks(c *gin.Context) {
 			"limit": limitInt,
 			"total": total,
 		},
-	})
+	}
+
+	_ = helpers.SetCache(cacheKey, response)
+
+	c.JSON(http.StatusOK, response)
 }
 
 func UpdateTask(c *gin.Context) {
@@ -134,6 +163,8 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
+	_ = helpers.DeleteCache("tasks:*")
+
 	helpers.Success(c, http.StatusOK, "Task updated successfully", task)
 }
 
@@ -151,6 +182,8 @@ func DeleteTask(c *gin.Context) {
 		helpers.Error(c, http.StatusInternalServerError, "Failed to delete task", err.Error())
 		return
 	}
+
+	_ = helpers.DeleteCache("tasks:*")
 
 	helpers.Success(c, http.StatusOK, "Task deleted successfully", nil)
 }

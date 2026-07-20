@@ -13,6 +13,7 @@ import (
 
 func main() {
 	config.ConnectDatabase()
+	config.ConnectRedis()
 
 	err := config.DB.AutoMigrate(&models.Task{})
 	if err != nil {
