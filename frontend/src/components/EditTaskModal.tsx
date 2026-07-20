@@ -3,7 +3,7 @@ import { Modal, View, Text, TextInput, Button, StyleSheet } from "react-native";
 
 import { Picker } from "@react-native-picker/picker";
 
-import { Task } from "../types/task";
+import { Task, TaskStatus } from "../types/task";
 import { updateTask } from "../api/taskApi";
 
 type Props = {
@@ -21,7 +21,7 @@ export default function EditTaskModal({
 }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("todo");
+  const [status, setStatus] = useState<TaskStatus>("todo");
   const [assignee, setAssignee] = useState("");
 
   useEffect(() => {
@@ -51,7 +51,12 @@ export default function EditTaskModal({
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+    >
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.heading}>Edit Task</Text>
@@ -68,6 +73,7 @@ export default function EditTaskModal({
             value={description}
             onChangeText={setDescription}
             style={styles.input}
+            multiline
           />
 
           <TextInput
@@ -79,7 +85,7 @@ export default function EditTaskModal({
 
           <Picker
             selectedValue={status}
-            onValueChange={(value) => setStatus(value)}
+            onValueChange={(value) => setStatus(value as TaskStatus)}
           >
             <Picker.Item label="Todo" value="todo" />
             <Picker.Item label="In Progress" value="in_progress" />
@@ -104,10 +110,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
 
   container: {
+    width: "100%",
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
@@ -117,6 +125,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
+    textAlign: "center",
   },
 
   input: {
