@@ -5,13 +5,16 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  Button,
 } from "react-native";
 
 import { getTasks } from "../api/taskApi";
 import { Task } from "../types/task";
+
 import SearchBar from "../components/SearchBar";
 import StatusFilter from "../components/StatusFilter";
 import Pagination from "../components/Pagination";
+import EditTaskModal from "../components/EditTaskModal";
 
 export default function TaskScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -23,6 +26,9 @@ export default function TaskScreen() {
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
   const [total, setTotal] = useState(0);
+
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -92,8 +98,28 @@ export default function TaskScreen() {
             <Text>Status: {item.status}</Text>
 
             <Text>Assignee: {item.assignee}</Text>
+
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Edit"
+                onPress={() => {
+                  setSelectedTask(item);
+                  setModalVisible(true);
+                }}
+              />
+            </View>
           </View>
         )}
+      />
+
+      <EditTaskModal
+        visible={modalVisible}
+        task={selectedTask}
+        onClose={() => setModalVisible(false)}
+        onSuccess={() => {
+          setModalVisible(false);
+          fetchTasks();
+        }}
       />
     </>
   );
@@ -119,5 +145,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+  },
+
+  buttonContainer: {
+    marginTop: 10,
   },
 });
