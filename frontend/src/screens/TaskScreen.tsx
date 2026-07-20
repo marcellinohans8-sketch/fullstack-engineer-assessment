@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  StyleSheet,
-  Button,
-} from "react-native";
+import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 
 import { getTasks } from "../api/taskApi";
 import { Task } from "../types/task";
@@ -15,6 +8,7 @@ import SearchBar from "../components/SearchBar";
 import StatusFilter from "../components/StatusFilter";
 import Pagination from "../components/Pagination";
 import EditTaskModal from "../components/EditTaskModal";
+import TaskCard from "../components/TaskCard";
 
 export default function TaskScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -90,25 +84,13 @@ export default function TaskScreen() {
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
-
-            <Text>{item.description}</Text>
-
-            <Text>Status: {item.status}</Text>
-
-            <Text>Assignee: {item.assignee}</Text>
-
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Edit"
-                onPress={() => {
-                  setSelectedTask(item);
-                  setModalVisible(true);
-                }}
-              />
-            </View>
-          </View>
+          <TaskCard
+            task={item}
+            onEdit={() => {
+              setSelectedTask(item);
+              setModalVisible(true);
+            }}
+          />
         )}
       />
 
@@ -130,24 +112,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-
-  card: {
-    backgroundColor: "#fff",
-    marginHorizontal: 10,
-    marginVertical: 6,
-    padding: 15,
-    borderRadius: 8,
-    elevation: 2,
-  },
-
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-
-  buttonContainer: {
-    marginTop: 10,
   },
 });
