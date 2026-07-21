@@ -1,106 +1,100 @@
-# Fullstack Engineer Assessment
+# Aplikasi Manajemen Tugas
 
-Task Management application menggunakan backend Go Gin, MySQL, Redis, dan frontend React Native TypeScript.
+Repositori ini berisi implementasi assessment Fullstack Engineer untuk aplikasi manajemen tugas. Aplikasi menggunakan backend Go dengan Gin, database MySQL, Redis untuk cache, dan frontend React Native dengan TypeScript.
 
-Project ini mengimplementasikan fitur filtering, update, soft delete, Redis caching, bug fixes, unit/component tests, migration SQL, dan dokumentasi setup.
+## Ringkasan Fitur
 
-## Tech Stack
+| Area | Kebutuhan | Status |
+| --- | --- | --- |
+| Backend | Filter daftar tugas berdasarkan `status`, `keyword`, `assignee`, `page`, `limit`, dan `sort` | Selesai |
+| Backend | Endpoint `PUT /api/tasks/:id` untuk mengubah tugas | Selesai |
+| Backend | Endpoint `DELETE /api/tasks/:id` dengan soft delete | Selesai |
+| Backend | Format respons error konsisten | Selesai |
+| Redis | Cache `GET /api/tasks` selama 60 detik | Selesai |
+| Redis | Key cache menyertakan query parameter | Selesai |
+| Redis | Cache dihapus setelah tambah, ubah, dan hapus tugas | Selesai |
+| Frontend | Input pencarian | Selesai |
+| Frontend | Filter status | Selesai |
+| Frontend | Pagination | Selesai |
+| Frontend | Modal edit tugas | Selesai |
+| Frontend | Indikator memuat | Selesai |
+| Bug fix | Judul duplikat mengembalikan HTTP `409` | Selesai |
+| Bug fix | Daftar tugas refresh setelah update | Selesai |
+| Bug fix | Tugas yang sudah soft delete tidak tampil | Selesai |
+| Testing | Test backend untuk update, search, dan cache invalidation | Selesai |
+| Testing | Test komponen frontend untuk search | Selesai |
+| Deliverable | README, migration database, dan unit/component test | Selesai |
+
+## Teknologi
 
 - Backend: Go, Gin, GORM
 - Database: MySQL
 - Cache: Redis
 - Frontend: React Native, Expo, TypeScript
-- Testing backend: Go test, SQLite in-memory test database, Miniredis
-- Testing frontend: Jest, Jest Expo, React Native Testing Library
+- Pengujian backend: Go test, SQLite di memori, Miniredis
+- Pengujian frontend: Jest, Jest Expo, React Native Testing Library
 
-## Project Structure
+## Struktur Folder
 
 ```text
 .
-├── backend
-│   ├── config
-│   │   ├── database.go
-│   │   └── redis.go
-│   ├── controllers
-│   │   └── task_controller.go
-│   ├── helpers
-│   │   ├── cache.go
-│   │   └── response.go
-│   ├── migrations
-│   │   └── 001_create_tasks.sql
-│   ├── models
-│   │   └── task.go
-│   ├── routes
-│   │   └── routes.go
-│   ├── tests
-│   │   ├── setup_test.go
-│   │   └── task_test.go
-│   ├── go.mod
-│   └── main.go
-├── frontend
-│   ├── src
-│   │   ├── api
-│   │   │   └── taskApi.ts
-│   │   ├── components
-│   │   │   ├── __tests__
-│   │   │   │   └── SearchBar.test.tsx
-│   │   │   ├── EditTaskModal.tsx
-│   │   │   ├── Loading.tsx
-│   │   │   ├── Pagination.tsx
-│   │   │   ├── SearchBar.tsx
-│   │   │   ├── StatusFilter.tsx
-│   │   │   └── TaskCard.tsx
-│   │   ├── constants
-│   │   │   └── api.ts
-│   │   ├── screens
-│   │   │   └── TaskScreen.tsx
-│   │   └── types
-│   │       └── task.ts
-│   ├── package.json
-│   └── package-lock.json
-└── README.md
+|-- backend
+|   |-- config
+|   |   |-- database.go
+|   |   `-- redis.go
+|   |-- controllers
+|   |   `-- task_controller.go
+|   |-- helpers
+|   |   |-- cache.go
+|   |   `-- response.go
+|   |-- migrations
+|   |   `-- 001_create_tasks.sql
+|   |-- models
+|   |   `-- task.go
+|   |-- routes
+|   |   `-- routes.go
+|   |-- tests
+|   |   |-- setup_test.go
+|   |   `-- task_test.go
+|   |-- go.mod
+|   `-- main.go
+|-- frontend
+|   |-- src
+|   |   |-- api
+|   |   |   `-- taskApi.ts
+|   |   |-- components
+|   |   |   |-- __tests__
+|   |   |   |   `-- SearchBar.test.tsx
+|   |   |   |-- EditTaskModal.tsx
+|   |   |   |-- Loading.tsx
+|   |   |   |-- Pagination.tsx
+|   |   |   |-- SearchBar.tsx
+|   |   |   |-- StatusFilter.tsx
+|   |   |   `-- TaskCard.tsx
+|   |   |-- constants
+|   |   |   `-- api.ts
+|   |   |-- screens
+|   |   |   `-- TaskScreen.tsx
+|   |   `-- types
+|   |       `-- task.ts
+|   |-- package.json
+|   `-- package-lock.json
+`-- README.md
 ```
 
-## Implemented Requirements
+## Setup Backend
 
-| Area | Requirement | Status |
-| --- | --- | --- |
-| Backend | Filtering by `status`, `keyword`, `assignee`, `page`, `limit`, `sort` | Done |
-| Backend | `PUT /api/tasks/:id` | Done |
-| Backend | Soft `DELETE /api/tasks/:id` | Done |
-| Backend | Consistent error responses | Done |
-| Redis | Cache `GET /api/tasks` for 60 seconds | Done |
-| Redis | Cache key includes query parameters | Done |
-| Redis | Invalidate cache after create/update/delete | Done |
-| Frontend | Search input | Done |
-| Frontend | Status filter | Done |
-| Frontend | Pagination | Done |
-| Frontend | Edit modal | Done |
-| Frontend | Loading state | Done |
-| Bug Fix | Duplicate title returns HTTP `409` | Done |
-| Bug Fix | Refresh list after update | Done |
-| Bug Fix | Hide soft-deleted tasks | Done |
-| Testing | Backend update test | Done |
-| Testing | Backend search/filter test | Done |
-| Testing | Backend cache invalidation test | Done |
-| Testing | Frontend component test | Done |
-| Deliverable | README | Done |
-| Deliverable | DB migration | Done |
-| Deliverable | Unit/component tests | Done |
+### 1. Prasyarat
 
-## Backend Setup
+Pastikan sudah terpasang dan berjalan:
 
-### 1. Prerequisites
-
-Install and run:
-
-- Go `1.26.x`
+- Go
 - MySQL
 - Redis
 
-### 2. Environment Variables
+### 2. Konfigurasi Environment
 
-Create `backend/.env`:
+Buat file `backend/.env`:
 
 ```env
 APP_PORT=8080
@@ -113,67 +107,67 @@ REDIS_ADDR=127.0.0.1:6379
 REDIS_PASSWORD=
 ```
 
-Notes:
+Catatan:
 
-- If `DB_HOST` is empty, backend defaults to `127.0.0.1`.
-- If `DB_PORT` is empty, backend defaults to `3306`.
-- If `REDIS_ADDR` is empty, backend defaults to `127.0.0.1:6379`.
-- If Redis is unavailable, backend still starts and cache is disabled until Redis is available.
+- Jika `DB_HOST` kosong, backend memakai default `127.0.0.1`.
+- Jika `DB_PORT` kosong, backend memakai default `3306`.
+- Jika `REDIS_ADDR` kosong, backend memakai default `127.0.0.1:6379`.
+- Jika Redis tidak tersedia saat aplikasi dijalankan, backend tetap hidup dan cache dinonaktifkan sementara.
 
-### 3. Install Backend Dependencies
+### 3. Instal Dependensi Backend
 
 ```bash
 cd backend
 go mod download
 ```
 
-### 4. Create Database
+### 4. Buat Database
 
 ```sql
 CREATE DATABASE task_management;
 ```
 
-### 5. Run Migration
+### 5. Jalankan Migrasi
 
-Migration file:
+File migrasi tersedia di:
 
 ```text
 backend/migrations/001_create_tasks.sql
 ```
 
-Run:
+Jalankan migrasi:
 
 ```bash
 mysql -u root -p task_management < backend/migrations/001_create_tasks.sql
 ```
 
-The migration creates:
+Migrasi membuat:
 
-- `tasks` table
-- unique index on `title`
-- index on `deleted_at` for soft delete
-- indexes on `status` and `assignee`
+- Tabel `tasks`
+- Unique index pada kolom `title`
+- Index pada kolom `deleted_at` untuk soft delete
+- Index pada kolom `status` dan `assignee`
 
-### 6. Start Backend
+### 6. Jalankan Backend
 
 ```bash
 cd backend
 go run .
 ```
 
-Default base URL:
+Backend berjalan di:
 
 ```text
 http://localhost:8080
 ```
 
-Health check:
+Endpoint pengecekan:
 
 ```http
 GET /
 ```
 
-Expected response:
+Contoh respons:
 
 ```json
 {
@@ -181,17 +175,17 @@ Expected response:
 }
 ```
 
-## Backend API
+## API Backend
 
-Base API path:
+Path dasar API:
 
 ```text
 /api
 ```
 
-### Response Format
+### Format Respons
 
-Success response:
+Respons sukses untuk tambah, ubah, dan hapus:
 
 ```json
 {
@@ -201,7 +195,7 @@ Success response:
 }
 ```
 
-List response:
+Respons daftar tugas:
 
 ```json
 {
@@ -215,23 +209,23 @@ List response:
 }
 ```
 
-Error response:
+Respons error:
 
 ```json
 {
   "success": false,
   "message": "Invalid request body",
-  "error": "validation error detail"
+  "error": "detail error validasi"
 }
 ```
 
-### Task Object
+### Struktur Data Tugas
 
 ```json
 {
   "id": 1,
-  "title": "Build task filter",
-  "description": "Add filter query parameters",
+  "title": "Membuat filter tugas",
+  "description": "Menambahkan filter keyword dan status",
   "status": "todo",
   "assignee": "Hans",
   "createdAt": "2026-07-21T10:00:00Z",
@@ -239,61 +233,61 @@ Error response:
 }
 ```
 
-Allowed status values:
+Nilai `status` yang diperbolehkan:
 
 - `todo`
 - `in_progress`
 - `done`
 
-### Create Task
+### Tambah Tugas
 
 ```http
 POST /api/tasks
 Content-Type: application/json
 ```
 
-Request:
+Isi permintaan:
 
 ```json
 {
-  "title": "Build task filter",
-  "description": "Add keyword and status filters",
+  "title": "Membuat filter tugas",
+  "description": "Menambahkan filter keyword dan status",
   "status": "todo",
   "assignee": "Hans"
 }
 ```
 
-Responses:
+Kemungkinan respons:
 
-- `201 Created`: task created
-- `400 Bad Request`: invalid request body
-- `409 Conflict`: duplicate title
-- `500 Internal Server Error`: unexpected database error
+- `201 Created`: tugas berhasil dibuat
+- `400 Bad Request`: body tidak valid
+- `409 Conflict`: judul tugas sudah ada
+- `500 Internal Server Error`: error database tidak terduga
 
-### List Tasks
+### Ambil Daftar Tugas
 
 ```http
 GET /api/tasks
 ```
 
-Query parameters:
+Parameter query:
 
-| Parameter | Type | Default | Description |
+| Parameter | Tipe | Default | Keterangan |
 | --- | --- | --- | --- |
-| `status` | string | empty | Filter by `todo`, `in_progress`, or `done` |
-| `keyword` | string | empty | Search in `title` or `description` |
-| `assignee` | string | empty | Filter by assignee |
-| `page` | number | `1` | Page number, must be positive |
-| `limit` | number | `10` | Page size, must be positive, capped at `100` |
-| `sort` | string | `created_at desc` | Sort field and direction |
+| `status` | string | kosong | Filter berdasarkan `todo`, `in_progress`, atau `done` |
+| `keyword` | string | kosong | Pencarian pada `title` dan `description` |
+| `assignee` | string | kosong | Filter berdasarkan penanggung jawab |
+| `page` | number | `1` | Nomor halaman, harus lebih dari `0` |
+| `limit` | number | `10` | Jumlah data per halaman, maksimal `100` |
+| `sort` | string | `created_at desc` | Field dan arah pengurutan |
 
-Example:
+Contoh:
 
 ```http
 GET /api/tasks?keyword=login&status=todo&assignee=Hans&page=1&limit=10&sort=created_at%20desc
 ```
 
-Allowed sort values:
+Nilai `sort` yang diperbolehkan:
 
 - `created_at asc`
 - `created_at desc`
@@ -310,133 +304,133 @@ Allowed sort values:
 - `assignee asc`
 - `assignee desc`
 
-Responses:
+Kemungkinan respons:
 
-- `200 OK`: list returned
-- `400 Bad Request`: invalid query parameter
-- `500 Internal Server Error`: unexpected database error
+- `200 OK`: daftar tugas berhasil dikembalikan
+- `400 Bad Request`: query parameter tidak valid
+- `500 Internal Server Error`: error database tidak terduga
 
-### Update Task
+### Ubah Tugas
 
 ```http
 PUT /api/tasks/:id
 Content-Type: application/json
 ```
 
-Request:
+Isi permintaan:
 
 ```json
 {
-  "title": "Build task filter",
-  "description": "Add search, filter, pagination, and sorting",
+  "title": "Membuat filter tugas",
+  "description": "Menambahkan search, filter, pagination, dan sorting",
   "status": "in_progress",
   "assignee": "Hans"
 }
 ```
 
-Responses:
+Kemungkinan respons:
 
-- `200 OK`: task updated
-- `400 Bad Request`: invalid id or request body
-- `404 Not Found`: task not found or already soft-deleted
-- `409 Conflict`: duplicate title
-- `500 Internal Server Error`: unexpected database error
+- `200 OK`: tugas berhasil diubah
+- `400 Bad Request`: id atau body tidak valid
+- `404 Not Found`: tugas tidak ditemukan atau sudah dihapus
+- `409 Conflict`: judul tugas sudah ada
+- `500 Internal Server Error`: error database tidak terduga
 
-### Delete Task
+### Hapus Tugas
 
 ```http
 DELETE /api/tasks/:id
 ```
 
-Behavior:
+Perilaku:
 
-- Deletes task using GORM soft delete.
-- Deleted task remains in the database with `deleted_at` filled.
-- Deleted task is hidden from `GET /api/tasks`.
+- Endpoint menggunakan hapus lunak (soft delete) dari GORM.
+- Data tetap ada di database dengan kolom `deleted_at` terisi.
+- Data yang sudah dihapus tidak tampil dari `GET /api/tasks`.
 
-Responses:
+Kemungkinan respons:
 
-- `200 OK`: task deleted
-- `400 Bad Request`: invalid id
-- `404 Not Found`: task not found or already soft-deleted
-- `500 Internal Server Error`: unexpected database error
+- `200 OK`: tugas berhasil dihapus
+- `400 Bad Request`: id tidak valid
+- `404 Not Found`: tugas tidak ditemukan atau sudah dihapus
+- `500 Internal Server Error`: error database tidak terduga
 
-## Redis Cache Behavior
+## Perilaku Cache Redis
 
-`GET /api/tasks` is cached for 60 seconds.
+Endpoint `GET /api/tasks` disimpan di Redis selama 60 detik.
 
-Cache key format:
+Format key cache:
 
 ```text
-tasks:assignee=<value>&keyword=<value>&limit=<value>&page=<value>&sort=<value>&status=<value>
+tasks:assignee=<nilai>&keyword=<nilai>&limit=<nilai>&page=<nilai>&sort=<nilai>&status=<nilai>
 ```
 
-Examples:
+Contoh:
 
 ```text
 tasks:assignee=&keyword=&limit=10&page=1&sort=created_at+desc&status=
 tasks:assignee=Hans&keyword=login&limit=5&page=1&sort=title+asc&status=todo
 ```
 
-Invalidation:
+Invalidasi cache:
 
-- `POST /api/tasks` deletes all `tasks:*` cache entries.
-- `PUT /api/tasks/:id` deletes all `tasks:*` cache entries.
-- `DELETE /api/tasks/:id` deletes all `tasks:*` cache entries.
+- `POST /api/tasks` menghapus semua cache `tasks:*`.
+- `PUT /api/tasks/:id` menghapus semua cache `tasks:*`.
+- `DELETE /api/tasks/:id` menghapus semua cache `tasks:*`.
 
-Cache helper uses Redis `SCAN` instead of `KEYS` for safer pattern deletion.
+Helper cache menggunakan Redis `SCAN`, bukan `KEYS`, agar penghapusan pattern lebih aman untuk jumlah key yang banyak.
 
-## Frontend Setup
+## Setup Frontend
 
-### 1. Prerequisites
+### 1. Prasyarat
 
-Install:
+Pastikan sudah terpasang:
 
 - Node.js
 - npm
-- Expo CLI through `npx expo`
+- Expo melalui `npx expo`
 
-### 2. Configure API URL
+### 2. Konfigurasi URL API
 
-Update:
+Ubah file:
 
 ```text
 frontend/src/constants/api.ts
 ```
 
-Example for local Android emulator:
+Contoh untuk Android emulator:
 
 ```ts
 export const BASE_URL = "http://10.0.2.2:8080/api";
 ```
 
-Example for physical device on same Wi-Fi:
+Contoh untuk perangkat fisik di jaringan Wi-Fi yang sama:
 
 ```ts
-export const BASE_URL = "http://YOUR_LOCAL_IP:8080/api";
+export const BASE_URL = "http://IP_LOKAL_LAPTOP:8080/api";
 ```
 
-Example for web/local browser:
+Contoh untuk browser lokal:
 
 ```ts
 export const BASE_URL = "http://localhost:8080/api";
 ```
 
-### 3. Install Frontend Dependencies
+### 3. Instal Dependensi Frontend
 
 ```bash
 cd frontend
 npm install
 ```
 
-### 4. Start Frontend
+### 4. Jalankan Frontend
 
 ```bash
 cd frontend
 npm run start
 ```
 
-Other scripts:
+Skrip lain:
 
 ```bash
 npm run android
@@ -444,71 +438,66 @@ npm run ios
 npm run web
 ```
 
-## Frontend Features
+## Fitur Frontend
 
-- Search input updates `keyword` query parameter.
-- Status filter updates `status` query parameter.
-- Pagination sends `page` and `limit` to backend.
-- Edit modal calls `PUT /api/tasks/:id`.
-- After successful edit, modal closes and task list refreshes.
-- Loading state is displayed while the list request is running.
+- Input pencarian mengirim parameter `keyword`.
+- Filter status mengirim parameter `status`.
+- Pagination mengirim parameter `page` dan `limit`.
+- Modal edit memanggil `PUT /api/tasks/:id`.
+- Setelah edit berhasil, modal ditutup dan daftar tugas dimuat ulang.
+- Indikator memuat tampil selama permintaan daftar tugas berjalan.
 
-## Testing
+## Pengujian
 
-### Backend Tests
+### Pengujian Backend
 
-Run:
+Jalankan:
 
 ```bash
 cd backend
 go test ./...
 ```
 
-Covered tests:
+Cakupan pengujian backend:
 
-- `TestUpdateTask`: verifies `PUT /api/tasks/:id`.
-- `TestSearchTask`: verifies keyword/status/assignee filtering.
-- `TestCacheInvalidation`: verifies Redis cache is created and invalidated after update/delete.
-- `TestDuplicateTitleReturnsConflict`: verifies duplicate title returns `409`.
-- `TestSoftDeletedTasksAreHidden`: verifies deleted tasks are hidden from list/search.
+- `TestUpdateTask`: memastikan `PUT /api/tasks/:id` berhasil mengubah data.
+- `TestSearchTask`: memastikan filter `keyword`, `status`, dan `assignee` berjalan.
+- `TestCacheInvalidation`: memastikan cache dibuat dan dihapus setelah create, update, dan delete.
+- `TestDuplicateTitleReturnsConflict`: memastikan judul duplikat mengembalikan `409`.
+- `TestSoftDeletedTasksAreHidden`: memastikan tugas soft-deleted tidak muncul pada list/search.
 
-Backend tests use:
+Pengujian backend memakai SQLite di memori dan Miniredis, sehingga tidak bergantung pada layanan MySQL dan Redis lokal.
 
-- SQLite in-memory database through `github.com/glebarez/sqlite`.
-- Miniredis through `github.com/alicebob/miniredis/v2`.
+### Pengujian Frontend
 
-This keeps tests independent from local MySQL and Redis services.
-
-### Frontend Tests
-
-Run:
+Jalankan:
 
 ```bash
 cd frontend
 npm run test
 ```
 
-Covered tests:
+Cakupan pengujian frontend:
 
-- `SearchBar.test.tsx`: verifies search input calls `onChangeText` with typed keyword.
+- `SearchBar.test.tsx`: memastikan input pencarian memanggil `onChangeText` dengan keyword yang diketik.
 
-### TypeScript Check
+### Pengecekan TypeScript
 
 ```bash
 cd frontend
 npx tsc --noEmit
 ```
 
-### Backend Build Check
+### Pengecekan Kompilasi Backend
 
 ```bash
 cd backend
 go build ./...
 ```
 
-## Verification Results
+## Hasil Verifikasi
 
-The following commands were run successfully:
+Perintah berikut sudah dijalankan dan berhasil:
 
 ```bash
 cd backend
@@ -520,50 +509,51 @@ npm run test -- --runInBand
 npx tsc --noEmit
 ```
 
-## Notes for Evaluator
+## Catatan untuk Evaluator
 
-- `PUT` and `DELETE` use `:id` in Gin routes, equivalent to the requested `/api/tasks/{id}` format.
-- Soft delete is handled by GORM because the model includes `gorm.DeletedAt`.
-- Normal GORM queries exclude soft-deleted rows by default, so `GET /api/tasks` hides deleted tasks.
-- Duplicate title is enforced through a unique index and mapped to HTTP `409`.
-- Redis is optional at boot to avoid crashing local development if Redis is temporarily unavailable, but caching is active when Redis is connected.
-- Cache invalidation deletes all task list cache variants because every query combination can produce a different cached list.
+- Route Gin memakai format `:id`, setara dengan kebutuhan `/api/tasks/{id}`.
+- Hapus lunak bekerja karena model `Task` memiliki field `gorm.DeletedAt`.
+- Query GORM biasa otomatis menyembunyikan data dengan `deleted_at` terisi.
+- Judul duplikat dijaga oleh unique index dan dipetakan menjadi HTTP `409 Conflict`.
+- Redis bersifat opsional saat aplikasi start agar development lokal tidak gagal ketika Redis belum hidup.
+- Saat Redis tersedia, cache list tugas aktif selama 60 detik.
+- Semua variasi cache list tugas dihapus setelah create, update, dan delete karena query parameter dapat menghasilkan daftar yang berbeda.
 
-## Troubleshooting
+## Pemecahan Masalah
 
-### Backend cannot connect to MySQL
+### Backend tidak bisa terhubung ke MySQL
 
-Check:
+Periksa:
 
-- MySQL service is running.
-- Database `task_management` exists.
-- `backend/.env` contains correct `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, and `DB_NAME`.
+- Layanan MySQL sudah berjalan.
+- Database `task_management` sudah dibuat.
+- File `backend/.env` berisi `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, dan `DB_NAME` yang benar.
 
-### Backend starts but cache is disabled
+### Backend berjalan tetapi cache tidak aktif
 
-Check:
+Periksa:
 
-- Redis service is running.
-- `REDIS_ADDR` is correct, for example `127.0.0.1:6379`.
-- `REDIS_PASSWORD` matches your Redis configuration.
+- Layanan Redis sudah berjalan.
+- `REDIS_ADDR` benar, misalnya `127.0.0.1:6379`.
+- `REDIS_PASSWORD` sesuai konfigurasi Redis.
 
-### Frontend cannot reach backend
+### Frontend tidak bisa mengakses backend
 
-Check:
+Periksa:
 
-- Backend is running on port `8080`.
-- `frontend/src/constants/api.ts` points to the correct host.
-- Physical devices usually cannot use `localhost` for your laptop backend. Use your laptop local network IP.
+- Backend berjalan di port `8080`.
+- `frontend/src/constants/api.ts` mengarah ke host yang benar.
+- Perangkat fisik biasanya tidak bisa memakai `localhost` untuk mengakses backend di laptop. Gunakan IP lokal laptop.
 
-### Duplicate title returns conflict
+### Judul duplikat mengembalikan konflik
 
-Expected behavior:
+Ini adalah perilaku yang diharapkan:
 
 ```http
 HTTP/1.1 409 Conflict
 ```
 
-The response body uses the standard error format:
+Contoh respons:
 
 ```json
 {

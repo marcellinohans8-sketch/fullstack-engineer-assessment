@@ -112,6 +112,14 @@ func TestCacheInvalidation(t *testing.T) {
 	require.Equal(t, http.StatusOK, w.Code)
 	assertRedisKeys(t, 1)
 
+	createTask(t, router, map[string]interface{}{
+		"title":       "Redis Create Invalidates",
+		"description": "Cache should be cleared after create",
+		"status":      "todo",
+		"assignee":    "Nina",
+	})
+	assertRedisKeys(t, 0)
+
 	w = performJSON(router, http.MethodPut, "/api/tasks/"+strconv.Itoa(int(created.Data.ID)), map[string]interface{}{
 		"title":       "Redis Test Updated",
 		"description": "Cache Updated",
