@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { FlatList } from "react-native";
 
 import { getTasks } from "../api/taskApi";
 import { Task } from "../types/task";
@@ -9,6 +9,7 @@ import StatusFilter from "../components/StatusFilter";
 import Pagination from "../components/Pagination";
 import EditTaskModal from "../components/EditTaskModal";
 import TaskCard from "../components/TaskCard";
+import Loading from "../components/Loading";
 
 export default function TaskScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -48,23 +49,21 @@ export default function TaskScreen() {
     fetchTasks();
   }, [keyword, status, page]);
 
-  useEffect(() => {
+  const handleKeywordChange = (value: string) => {
     setPage(1);
-  }, [keyword, status]);
+    setKeyword(value);
+  };
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  const handleStatusChange = (value: string) => {
+    setPage(1);
+    setStatus(value);
+  };
 
   return (
     <>
-      <SearchBar value={keyword} onChangeText={setKeyword} />
+      <SearchBar value={keyword} onChangeText={handleKeywordChange} />
 
-      <StatusFilter value={status} onChange={setStatus} />
+      <StatusFilter value={status} onChange={handleStatusChange} />
 
       <Pagination
         page={page}
@@ -80,19 +79,23 @@ export default function TaskScreen() {
         }}
       />
 
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TaskCard
-            task={item}
-            onEdit={() => {
-              setSelectedTask(item);
-              setModalVisible(true);
-            }}
-          />
-        )}
-      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TaskCard
+              task={item}
+              onEdit={() => {
+                setSelectedTask(item);
+                setModalVisible(true);
+              }}
+            />
+          )}
+        />
+      )}
 
       <EditTaskModal
         visible={modalVisible}
@@ -106,11 +109,3 @@ export default function TaskScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

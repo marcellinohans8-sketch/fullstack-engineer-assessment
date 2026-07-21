@@ -23,6 +23,7 @@ export default function EditTaskModal({
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<TaskStatus>("todo");
   const [assignee, setAssignee] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -34,9 +35,11 @@ export default function EditTaskModal({
   }, [task]);
 
   const handleSave = async () => {
-    if (!task) return;
+    if (!task || saving) return;
 
     try {
+      setSaving(true);
+
       await updateTask(task.id, {
         title,
         description,
@@ -47,6 +50,8 @@ export default function EditTaskModal({
       onSuccess();
     } catch (error) {
       console.log(error);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -93,7 +98,7 @@ export default function EditTaskModal({
           </Picker>
 
           <View style={styles.button}>
-            <Button title="Save" onPress={handleSave} />
+            <Button title={saving ? "Saving..." : "Save"} onPress={handleSave} disabled={saving} />
           </View>
 
           <View style={styles.button}>

@@ -1,6 +1,15 @@
 import axios from "axios";
 import { BASE_URL } from "../constants/api";
-import { Task } from "../types/task";
+import { Task, TaskResponse } from "../types/task";
+
+export type GetTasksParams = {
+  keyword?: string;
+  status?: string;
+  assignee?: string;
+  page?: number;
+  limit?: number;
+  sort?: string;
+};
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -9,8 +18,8 @@ const api = axios.create({
   },
 });
 
-export const getTasks = (params?: any) =>
-  api.get("/tasks", { params });
+export const getTasks = (params?: GetTasksParams) =>
+  api.get<TaskResponse>("/tasks", { params });
 
 export const createTask = (task: Partial<Task>) =>
   api.post("/tasks", task);
@@ -21,4 +30,4 @@ export const updateTask = (id: number, task: Partial<Task>) =>
 export const deleteTask = (id: number) =>
   api.delete(`/tasks/${id}`);
 
-export default api; 
+export default api;

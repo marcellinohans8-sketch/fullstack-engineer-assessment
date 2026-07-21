@@ -13,16 +13,21 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	_ = godotenv.Load()
 
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
+
+	if dbHost == "" {
+		dbHost = "127.0.0.1"
+	}
+
+	if dbPort == "" {
+		dbPort = "3306"
+	}
 
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
@@ -40,5 +45,5 @@ func ConnectDatabase() {
 
 	DB = database
 
-	fmt.Println("✅ Database Connected")
+	fmt.Println("Database connected")
 }

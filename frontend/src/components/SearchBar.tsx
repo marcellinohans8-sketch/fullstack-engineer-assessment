@@ -8,6 +8,7 @@ interface Props {
 export default function SearchBar({ value, onChangeText }: Props) {
   return (
     <TextInput
+      testID="task-search-input"
       placeholder="Search task..."
       value={value}
       onChangeText={onChangeText}

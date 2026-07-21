@@ -11,22 +11,29 @@ import (
 
 var (
 	RedisClient *redis.Client
-	Ctx = context.Background()
+	Ctx         = context.Background()
 )
 
 func ConnectRedis() {
 	_ = godotenv.Load()
 
-	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDR"),
+	addr := os.Getenv("REDIS_ADDR")
+	if addr == "" {
+		addr = "127.0.0.1:6379"
+	}
+
+	client := redis.NewClient(&redis.Options{
+		Addr:     addr,
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	})
 
-	_, err := RedisClient.Ping(Ctx).Result()
-	if err != nil {
-		panic(err)
+	if _, err := client.Ping(Ctx).Result(); err != nil {
+		RedisClient = nil
+		fmt.Println("Redis unavailable, cache disabled:", err)
+		return
 	}
 
-	fmt.Println("✅ Redis Connected")
+	RedisClient = client
+	fmt.Println("Redis connected")
 }
